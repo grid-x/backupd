@@ -1,5 +1,5 @@
-hash: e66fdf57e47669f6240ca9ab04af70d7f80dbd240d1c52c82b223e5de6d94cfa
-updated: 2017-05-15T13:10:12.237167546+02:00
+hash: 24561b5d11f1ffa6088e145d84e401c904b1a12624b9c9aa5cb6800de8e67450
+updated: 2017-05-15T15:35:55.559241359+02:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: cea091b5b8fe6fcecf0eb6ec8f1a2570ff4ee6a7
@@ -48,7 +48,7 @@ imports:
 - name: github.com/mickep76/etcdmap
   version: c53d6e11e292bc507b43e8f8f43fa477184edd75
 - name: github.com/robfig/cron
-  version: b024fc5ea0e34bc3f83d9941c8d60b0622bfaca4
+  version: df38d32658d8788cd446ba74db4bb5375c4b0cb3
 - name: github.com/Sirupsen/logrus
   version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
 - name: github.com/ugorji/go
@@ -59,8 +59,4 @@ imports:
   version: c8c74377599bd978aee1cf3b9b63a8634051cec2
   subpackages:
   - context
-- name: golang.org/x/sys
-  version: 1e99a4f9d247b28c670884b9a8d6801f39a47b77
-  subpackages:
-  - unix
 testImports: []

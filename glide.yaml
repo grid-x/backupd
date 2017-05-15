@@ -1,7 +1,7 @@
 package: github.com/jhedev/backupd
 import:
 - package: github.com/robfig/cron
-  version: ~1.0.0
+  version: df38d32658d8788cd446ba74db4bb5375c4b0cb3
 - package: github.com/mickep76/etcdmap
 - package: golang.org/x/net
   subpackages:
