@@ -1,0 +1,14 @@
+package: github.com/jhedev/backupd
+import:
+- package: github.com/robfig/cron
+  version: ~1.0.0
+- package: github.com/mickep76/etcdmap
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: github.com/coreos/etcd
+  version: ~3.2.0-rc.0
+  subpackages:
+  - client
+- package: github.com/aws/aws-sdk-go
+  version: ~1.8.22

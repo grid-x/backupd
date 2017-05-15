@@ -1,0 +1,29 @@
+hash: 81852c1e7a3d46528c8f264e5e2564234fcbc021cc9b087532a5445f4119a261
+updated: 2017-05-15T12:44:18.242862707+02:00
+imports:
+- name: github.com/aws/aws-sdk-go
+  version: cea091b5b8fe6fcecf0eb6ec8f1a2570ff4ee6a7
+- name: github.com/coreos/etcd
+  version: 7e6d876385396bf3ea8f1b58ab24b697a3d9f5d8
+  subpackages:
+  - client
+  - pkg/pathutil
+  - pkg/types
+  - version
+- name: github.com/coreos/go-semver
+  version: 568e959cd89871e61434c1143528d9162da89ef2
+  subpackages:
+  - semver
+- name: github.com/mickep76/etcdmap
+  version: c53d6e11e292bc507b43e8f8f43fa477184edd75
+- name: github.com/robfig/cron
+  version: b024fc5ea0e34bc3f83d9941c8d60b0622bfaca4
+- name: github.com/ugorji/go
+  version: ded73eae5db7e7a0ef6f55aace87a2873c5d2b74
+  subpackages:
+  - codec
+- name: golang.org/x/net
+  version: c8c74377599bd978aee1cf3b9b63a8634051cec2
+  subpackages:
+  - context
+testImports: []
