@@ -3,6 +3,7 @@ package backup
 import (
 	"io/ioutil"
 	"path/filepath"
+	"time"
 )
 
 type DataStore interface {
@@ -14,6 +15,9 @@ type Storage interface {
 }
 
 type Config struct {
+	// Name of backup this job belongs to
+	name string
+
 	tempDir       string
 	tempDirPrefix string
 }
@@ -25,37 +29,64 @@ func DefaultConfig() Config {
 	}
 }
 
+type BackupJobStatus struct {
+	Name     string
+	Duration time.Duration
+	Error    error
+}
+
+func errorStatus(name string, start time.Time, err error) BackupJobStatus {
+	end := time.Now()
+	return BackupJobStatus{
+		Name:     name,
+		Duration: end.Sub(start),
+		Error:    err,
+	}
+}
+
 type BackupJob struct {
 	conf      Config
 	datastore DataStore
 	storage   Storage
+	statusc   chan BackupJobStatus
 }
 
-func NewBackupJob(config *Config, ds DataStore, s Storage) *BackupJob {
-	if config == nil {
-		tmp := DefaultConfig()
-		config = &tmp
-	}
+func NewBackupJob(ds DataStore, s Storage, name string, statusc chan BackupJobStatus) *BackupJob {
+	conf := DefaultConfig()
+	conf.name = name
+
 	return &BackupJob{
 		datastore: ds,
 		storage:   s,
-		conf:      *config,
+		conf:      conf,
+		statusc:   statusc,
 	}
 }
 
-func (b *BackupJob) Run() error {
+func (b *BackupJob) Run() {
+	start := time.Now()
+
 	tmpDir, err := ioutil.TempDir(b.conf.tempDir, b.conf.tempDirPrefix)
 	if err != nil {
-		return err
+		b.statusc <- errorStatus(b.conf.name, start, err)
+		return
 	}
 
 	localfile, err := b.datastore.ExportTo(tmpDir)
 	if err != nil {
-		return err
+		b.statusc <- errorStatus(b.conf.name, start, err)
+		return
 	}
 
 	if err := b.storage.Copy(localfile, filepath.Base(localfile)); err != nil {
-		return err
+		b.statusc <- errorStatus(b.conf.name, start, err)
+		return
 	}
-	return nil
+
+	end := time.Now()
+
+	b.statusc <- BackupJobStatus{
+		Name:     b.conf.name,
+		Duration: end.Sub(start),
+	}
 }
