@@ -6,7 +6,7 @@ import (
 )
 
 type DataStore interface {
-	ExportTo(tmpdir string) error
+	ExportTo(tmpdir string) (string, error)
 }
 
 type Storage interface {
@@ -25,49 +25,37 @@ func DefaultConfig() Config {
 	}
 }
 
-type Backup struct {
+type BackupJob struct {
 	conf      Config
 	datastore DataStore
 	storage   Storage
 }
 
-func NewBackup(config *Config, ds DataStore, s Storage) *Backup {
+func NewBackupJob(config *Config, ds DataStore, s Storage) *BackupJob {
 	if config == nil {
 		tmp := DefaultConfig()
 		config = &tmp
 	}
-	return &Backup{
+	return &BackupJob{
 		datastore: ds,
 		storage:   s,
 		conf:      *config,
 	}
 }
 
-func (b *Backup) Run() error {
+func (b *BackupJob) Run() error {
 	tmpDir, err := ioutil.TempDir(b.conf.tempDir, b.conf.tempDirPrefix)
 	if err != nil {
 		return err
 	}
 
-	if err := b.datastore.ExportTo(tmpDir); err != nil {
-		return err
-	}
-
-	files, err := ioutil.ReadDir(tmpDir)
+	localfile, err := b.datastore.ExportTo(tmpDir)
 	if err != nil {
 		return err
 	}
-	for _, f := range files {
-		if f.IsDir() {
-			// Expect files and not directories
-			continue
-		}
 
-		basename := f.Name()
-		localfile := filepath.Join(tmpDir, basename)
-		if err := b.storage.Copy(localfile, basename); err != nil {
-			return err
-		}
+	if err := b.storage.Copy(localfile, filepath.Base(localfile)); err != nil {
+		return err
 	}
 	return nil
 }

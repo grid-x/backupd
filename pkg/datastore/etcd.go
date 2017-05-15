@@ -20,7 +20,7 @@ func NewEtcd(endpoint string) *Etcd {
 	}
 }
 
-func (e *Etcd) ExportTo(tmpdir string) error {
+func (e *Etcd) ExportTo(tmpdir string) (string, error) {
 	cfg := client.Config{
 		Endpoints: []string{e.endpoint},
 		Transport: client.DefaultTransport,
@@ -29,14 +29,14 @@ func (e *Etcd) ExportTo(tmpdir string) error {
 	}
 	c, err := client.New(cfg)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	kapi := client.NewKeysAPI(c)
 	// set "/foo" key with "bar" value
 	resp, err := kapi.Get(context.Background(), "/", &client.GetOptions{Recursive: true})
 	if err != nil {
-		return err
+		return "", err
 	}
 	// Export and write output.
 	m := etcdmap.Map(resp.Node)
@@ -44,18 +44,19 @@ func (e *Etcd) ExportTo(tmpdir string) error {
 	// TODO: add time stamp here
 	f, err := ioutil.TempFile(tmpdir, "etcd-")
 	if err != nil {
-		return err
+		return "", err
 	}
+	defer f.Close()
 
 	j, err := json.Marshal(m)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	_, err = f.Write(j)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return f.Name(), nil
 }
