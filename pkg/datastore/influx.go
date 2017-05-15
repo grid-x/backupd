@@ -1,7 +1,6 @@
 package datastore
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os/exec"
 	"path/filepath"
@@ -46,7 +45,6 @@ func (i *Influx) ExportTo(tmpdir string) (string, error) {
 	for _, f := range fs {
 		backupFiles = append(backupFiles, filepath.Join(tmpdir, f.Name()))
 	}
-	fmt.Println(backupFiles)
 
 	archive, err := ioutil.TempFile(tmpdir, "influxdb-archive-")
 	if err != nil {
