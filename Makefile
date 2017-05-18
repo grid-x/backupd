@@ -7,7 +7,7 @@ test:
 	go test -v $(shell glide nv)
 
 server: ${GO_FILES}
-	go build -o ${BIN_DIR}/backup.sh github.com/jhedev/backupd/cmd/server
+	go build -o ${BIN_DIR}/backup.sh github.com/grid-x/backupd/cmd/server
 
 backup.sh: ${GO_FILES}
-	go build -o ${BIN_DIR}/backup.sh github.com/jhedev/backupd/cmd/backup.sh
+	go build -o ${BIN_DIR}/backup.sh github.com/grid-x/backupd/cmd/backup.sh
