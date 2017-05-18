@@ -14,3 +14,4 @@ import:
   version: ~1.8.22
 - package: github.com/Sirupsen/logrus
   version: ~0.11.5
+- package: gopkg.in/yaml.v2
