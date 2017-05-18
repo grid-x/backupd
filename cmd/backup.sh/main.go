@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/jhedev/backupd/pkg/backup"
-	"github.com/jhedev/backupd/pkg/datastore"
-	"github.com/jhedev/backupd/pkg/storage"
+	"github.com/grid-x/backupd/pkg/backup"
+	"github.com/grid-x/backupd/pkg/datastore"
+	"github.com/grid-x/backupd/pkg/storage"
 )
 
 func main() {
