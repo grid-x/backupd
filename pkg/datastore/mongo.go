@@ -24,7 +24,6 @@ func mkMongodumpCmd(host string, port int, user, password string, archFile strin
 		args = append(args, "--password", password)
 	}
 
-	fmt.Println(args)
 	return exec.Command(mongodump, args...)
 }
 
@@ -54,10 +53,8 @@ func (m *MongoDB) ExportTo(tmpdir string) (string, error) {
 	defer f.Close()
 
 	cmd := mkMongodumpCmd(m.host, m.port, m.user, m.password, tmpfile)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(string(out))
-		return "", err
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return "", fmt.Errorf("%s: %s", err.Error(), string(out))
 	}
 
 	return tmpfile, nil
