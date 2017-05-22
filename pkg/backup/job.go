@@ -78,7 +78,11 @@ func (b *BackupJob) Run() {
 		return
 	}
 
-	if err := b.storage.Copy(localfile, filepath.Base(localfile)); err != nil {
+	remotefile := filepath.Join(
+		b.conf.name,
+		time.Now().Format(time.RFC3339),
+		filepath.Base(localfile))
+	if err := b.storage.Copy(localfile, remotefile); err != nil {
 		b.statusc <- errorStatus(b.conf.name, start, err)
 		return
 	}
