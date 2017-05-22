@@ -18,6 +18,8 @@ func main() {
 		configFile = flag.String("config-file", "config.yaml", "Config file to use")
 	)
 
+	flag.Parse()
+
 	config, err := config.ReadConfigFromFile(*configFile)
 	if err != nil {
 		logger.Fatalf("Problem reading config file: %s", err.Error())
