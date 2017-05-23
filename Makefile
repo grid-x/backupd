@@ -1,13 +1,26 @@
 GO_FILES=$(shell find . -type f -name "*.go")
 BIN_DIR ?= bin
+BRANCH := $(shell git branch | sed -n -e 's/^\* \(.*\)/\1/p' | sed -e 's/\//_/g')
+TAG := ${BRANCH}-$(shell git rev-parse --short HEAD)
+IMAGE_URL := gridx/backupd:${TAG}
+
 
 all: backup.sh
 
 test:
 	go test -v $(shell glide nv)
 
-server: ${GO_FILES}
+bin/server: ${GO_FILES}
 	go build -o ${BIN_DIR}/server github.com/grid-x/backupd/cmd/server
 
-backup.sh: ${GO_FILES}
+bin/server.linux: ${GO_FILES}
+	GOOS=linux go build -o ${BIN_DIR}/server.linux github.com/grid-x/backupd/cmd/server
+
+bin/backup.sh: ${GO_FILES}
 	go build -o ${BIN_DIR}/backup.sh github.com/grid-x/backupd/cmd/backup.sh
+
+docker: bin/server.linux
+	docker build -t ${IMAGE_URL} -f Dockerfile .
+
+push: docker
+	docker push ${IMAGE_URL}
