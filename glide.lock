@@ -49,7 +49,7 @@ imports:
   version: c53d6e11e292bc507b43e8f8f43fa477184edd75
 - name: github.com/robfig/cron
   version: df38d32658d8788cd446ba74db4bb5375c4b0cb3
-- name: github.com/Sirupsen/logrus
+- name: github.com/sirupsen/logrus
   version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
 - name: github.com/ugorji/go
   version: ded73eae5db7e7a0ef6f55aace87a2873c5d2b74
