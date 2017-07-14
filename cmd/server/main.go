@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/grid-x/backupd/pkg/backup"
 	"github.com/grid-x/backupd/pkg/config"
