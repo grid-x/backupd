@@ -1,3 +1,4 @@
+GO_VERSION=1.8
 GO_FILES=$(shell find . -type f -name "*.go")
 BIN_DIR ?= bin
 BRANCH := $(shell git branch | sed -n -e 's/^\* \(.*\)/\1/p' | sed -e 's/\//_/g')
@@ -24,3 +25,6 @@ docker: bin/server.linux
 
 push: docker
 	docker push ${IMAGE_URL}
+
+ci:
+	docker run --rm -v "$$PWD:/go/src/github.com/grid-x/backupd" -w /go/src/github.com/grid-x/backupd golang:${GO_VERSION} bash -c 'make bin/server.linux'
