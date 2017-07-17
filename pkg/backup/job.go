@@ -2,6 +2,7 @@ package backup
 
 import (
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"time"
 )
@@ -83,6 +84,11 @@ func (b *BackupJob) Run() {
 		time.Now().Format(time.RFC3339),
 		filepath.Base(localfile))
 	if err := b.storage.Copy(localfile, remotefile); err != nil {
+		b.statusc <- errorStatus(b.conf.name, start, err)
+		return
+	}
+	err = os.Remove(localfile)
+	if err != nil {
 		b.statusc <- errorStatus(b.conf.name, start, err)
 		return
 	}
