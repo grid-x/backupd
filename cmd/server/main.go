@@ -88,9 +88,14 @@ func main() {
 			logger.Warnf("Target type '%s' currently not supported", t.Type)
 			continue
 		}
+		conf := backup.Config{
+			Name:          t.Name,
+			TempDir:       config.Settings.TmpDir,
+			TempDirPrefix: "",
+		}
 		schedules = append(schedules, backup.Schedule{
 			Spec:      t.Schedule,
-			BackupJob: backup.NewBackupJob(ds, s3, t.Name, statusc),
+			BackupJob: backup.NewBackupJob(ds, s3, conf, statusc),
 		})
 		logger.Infof("Successfully added job for target: %s", t.Name)
 	}
