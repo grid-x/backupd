@@ -17,16 +17,16 @@ type Storage interface {
 
 type Config struct {
 	// Name of backup this job belongs to
-	name string
+	Name string
 
-	tempDir       string
-	tempDirPrefix string
+	TempDir       string
+	TempDirPrefix string
 }
 
 func DefaultConfig() Config {
 	return Config{
-		tempDir:       "", // empty string forces to use system's defaults
-		tempDirPrefix: "",
+		TempDir:       "", // empty string forces to use system's defaults
+		TempDirPrefix: "",
 	}
 }
 
@@ -52,10 +52,7 @@ type BackupJob struct {
 	statusc   chan BackupJobStatus
 }
 
-func NewBackupJob(ds DataStore, s Storage, name string, statusc chan BackupJobStatus) *BackupJob {
-	conf := DefaultConfig()
-	conf.name = name
-
+func NewBackupJob(ds DataStore, s Storage, conf Config, statusc chan BackupJobStatus) *BackupJob {
 	return &BackupJob{
 		datastore: ds,
 		storage:   s,
@@ -67,36 +64,36 @@ func NewBackupJob(ds DataStore, s Storage, name string, statusc chan BackupJobSt
 func (b *BackupJob) Run() {
 	start := time.Now()
 
-	tmpDir, err := ioutil.TempDir(b.conf.tempDir, b.conf.tempDirPrefix)
+	tmpDir, err := ioutil.TempDir(b.conf.TempDir, b.conf.TempDirPrefix)
 	if err != nil {
-		b.statusc <- errorStatus(b.conf.name, start, err)
+		b.statusc <- errorStatus(b.conf.Name, start, err)
 		return
 	}
 
 	localfile, err := b.datastore.ExportTo(tmpDir)
 	if err != nil {
-		b.statusc <- errorStatus(b.conf.name, start, err)
+		b.statusc <- errorStatus(b.conf.Name, start, err)
 		return
 	}
 
 	remotefile := filepath.Join(
-		b.conf.name,
+		b.conf.Name,
 		time.Now().Format(time.RFC3339),
 		filepath.Base(localfile))
 	if err := b.storage.Copy(localfile, remotefile); err != nil {
-		b.statusc <- errorStatus(b.conf.name, start, err)
+		b.statusc <- errorStatus(b.conf.Name, start, err)
 		return
 	}
 	err = os.Remove(localfile)
 	if err != nil {
-		b.statusc <- errorStatus(b.conf.name, start, err)
+		b.statusc <- errorStatus(b.conf.Name, start, err)
 		return
 	}
 
 	end := time.Now()
 
 	b.statusc <- BackupJobStatus{
-		Name:     b.conf.name,
+		Name:     b.conf.Name,
 		Duration: end.Sub(start),
 	}
 }
