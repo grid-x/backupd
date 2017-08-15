@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"path/filepath"
 )
@@ -55,6 +56,10 @@ func (i *Influx) ExportTo(tmpdir string) (string, error) {
 	err = createTarArchive(archive, backupFiles)
 	if err != nil {
 		return "", err
+	}
+
+	for _, f := range backupFiles {
+		os.Remove(f)
 	}
 
 	return archive.Name(), nil
