@@ -28,3 +28,6 @@ push: docker
 
 ci:
 	docker run --rm -v "$$PWD:/go/src/github.com/grid-x/backupd" -w /go/src/github.com/grid-x/backupd golang:${GO_VERSION} bash -c 'make bin/server.linux'
+
+ci_test:
+	docker run --rm -v "$$PWD:/go/src/github.com/grid-x/backupd" -w /go/src/github.com/grid-x/backupd golang:${GO_VERSION} bash -c 'make test'
