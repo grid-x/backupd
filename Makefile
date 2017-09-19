@@ -27,7 +27,7 @@ push: docker
 	docker push ${IMAGE_URL}
 
 ci:
-	docker run --rm -v "$$PWD:/go/src/github.com/grid-x/backupd" -w /go/src/github.com/grid-x/backupd golang:${GO_VERSION} bash -c 'make bin/server.linux'
+	docker run --rm -v "$$PWD:/go/src/github.com/grid-x/backupd" -w /go/src/github.com/grid-x/backupd golang:${GO_VERSION} bash -c 'curl https://glide.sh/get | sh && make bin/server.linux'
 
 ci_test:
-	docker run --rm -v "$$PWD:/go/src/github.com/grid-x/backupd" -w /go/src/github.com/grid-x/backupd golang:${GO_VERSION} bash -c 'make test'
+	docker run --rm -v "$$PWD:/go/src/github.com/grid-x/backupd" -w /go/src/github.com/grid-x/backupd golang:${GO_VERSION} bash -c 'curl https://glide.sh/get | sh && make test'
