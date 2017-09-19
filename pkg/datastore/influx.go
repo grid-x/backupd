@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -31,10 +32,9 @@ func NewInflux(endpoint, database string) *Influx {
 func (i *Influx) ExportTo(tmpdir string) (string, error) {
 	cmd := mkInfluxdCmd(i.database, i.endpoint, tmpdir)
 
-	//TODO: do not ignore output, but log it in case of error
-	_, err := cmd.CombinedOutput()
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Error: %+v, Output: %s", string(out))
 	}
 
 	fs, err := ioutil.ReadDir(tmpdir)
