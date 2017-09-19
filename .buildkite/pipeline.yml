@@ -1,0 +1,11 @@
+steps:
+  - command:
+    - 'make ci_test'
+    label: ':hammer: Tests'
+    agents:
+    - "queue=default"
+  - command:
+    - 'make ci'
+    label: ':golang: Build'
+    agents:
+    - "queue=default"
