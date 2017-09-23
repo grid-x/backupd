@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -20,12 +22,18 @@ func mkInfluxdCmd(database, host, tmpdir string) *exec.Cmd {
 type Influx struct {
 	endpoint string
 	database string
+
+	logger log.FieldLogger
 }
 
 func NewInflux(endpoint, database string) *Influx {
 	return &Influx{
 		endpoint: endpoint,
 		database: database,
+
+		logger: log.New().WithFields(log.Fields{
+			"datastore": "influx",
+		}),
 	}
 }
 
@@ -59,7 +67,9 @@ func (i *Influx) ExportTo(tmpdir string) (string, error) {
 	}
 
 	for _, f := range backupFiles {
-		os.Remove(f)
+		if err := os.Remove(f); err != nil {
+			i.logger.Warnf("Got error while removing %s: %+v", f, err)
+		}
 	}
 
 	return archive.Name(), nil
