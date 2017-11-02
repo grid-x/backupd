@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -14,22 +15,32 @@ const (
 	influxd = "influxd"
 )
 
-func mkInfluxdCmd(database, host, tmpdir string) *exec.Cmd {
-	return exec.Command(influxd, "backup", "-host", host,
-		"-database", database, tmpdir)
+func mkInfluxdCmd(database, host, tmpdir string, since *time.Time) *exec.Cmd {
+	args := []string{"backup", "-host", host,
+		"-database", database}
+
+	if since != nil {
+		args = append(args, "-since", (*since).Format(time.RFC3339))
+	}
+
+	args = append(args, tmpdir)
+
+	return exec.Command(influxd, args...)
 }
 
 type Influx struct {
 	endpoint string
 	database string
+	last     *time.Duration
 
 	logger log.FieldLogger
 }
 
-func NewInflux(endpoint, database string) *Influx {
+func NewInflux(endpoint, database string, last *time.Duration) *Influx {
 	return &Influx{
 		endpoint: endpoint,
 		database: database,
+		last:     last,
 
 		logger: log.New().WithFields(log.Fields{
 			"datastore": "influx",
@@ -38,7 +49,12 @@ func NewInflux(endpoint, database string) *Influx {
 }
 
 func (i *Influx) ExportTo(tmpdir string) (string, error) {
-	cmd := mkInfluxdCmd(i.database, i.endpoint, tmpdir)
+	var since *time.Time
+	if i.last != nil {
+		since = new(time.Time)
+		*since = time.Now().Add(-1 * *i.last)
+	}
+	cmd := mkInfluxdCmd(i.database, i.endpoint, tmpdir, since)
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {

@@ -6,7 +6,7 @@ TAG := ${BRANCH}-$(shell git rev-parse --short HEAD)
 IMAGE_URL := gridx/backupd:${TAG}
 
 
-all: backup.sh
+all: bin/server
 
 test:
 	go test -v $(shell glide nv)
