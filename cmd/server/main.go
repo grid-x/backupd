@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -59,7 +60,14 @@ func main() {
 				logger.Errorf("Can't convert influxdb database to string for target %s", t.Name)
 				continue
 			}
-			ds = datastore.NewInflux(endpoint, database)
+
+			days, ok := t.Settings["daysToKeep"].(int)
+			var last *time.Duration
+			if ok {
+				last = new(time.Duration)
+				*last = 24 * time.Hour * time.Duration(days)
+			}
+			ds = datastore.NewInflux(endpoint, database, last)
 		case "mongodb":
 			host, ok := t.Settings["host"].(string)
 			if !ok {
