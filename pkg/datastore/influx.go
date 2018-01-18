@@ -28,6 +28,7 @@ func mkInfluxdCmd(database, host, tmpdir string, since *time.Time) *exec.Cmd {
 	return exec.Command(influxd, args...)
 }
 
+// Influx represents the datastore interface for the influx database
 type Influx struct {
 	endpoint string
 	database string
@@ -36,6 +37,7 @@ type Influx struct {
 	logger log.FieldLogger
 }
 
+// NewInflux creates a new influx object from the given settings
 func NewInflux(endpoint, database string, last *time.Duration) *Influx {
 	return &Influx{
 		endpoint: endpoint,
@@ -48,10 +50,13 @@ func NewInflux(endpoint, database string, last *time.Duration) *Influx {
 	}
 }
 
+// String returns a string representation of the datastore
 func (i *Influx) String() string {
 	return "Influx"
 }
 
+// ExportTo exports the database contents to a file and uses the given tempdir
+// required to satisfy the datastore interface
 func (i *Influx) ExportTo(tmpdir string) (string, error) {
 	var since *time.Time
 	if i.last != nil {

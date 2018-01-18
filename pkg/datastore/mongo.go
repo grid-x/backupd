@@ -27,6 +27,7 @@ func mkMongodumpCmd(host string, port int, user, password string, archFile strin
 	return exec.Command(mongodump, args...)
 }
 
+// MongoDB represents the datastore interface for the mongodb database
 type MongoDB struct {
 	host     string
 	port     int
@@ -34,6 +35,7 @@ type MongoDB struct {
 	password string
 }
 
+// NewMongoDB creates a new MongoDB instance from the given settings
 func NewMongoDB(host string, port int, user, password string) *MongoDB {
 	return &MongoDB{
 		host:     host,
@@ -43,10 +45,13 @@ func NewMongoDB(host string, port int, user, password string) *MongoDB {
 	}
 }
 
+// String returns a string representation of the datastore
 func (m *MongoDB) String() string {
 	return "mongodb"
 }
 
+// ExportTo exports the database contents to a file and uses the given tempdir
+// required to satisfy the datastore interface
 func (m *MongoDB) ExportTo(tmpdir string) (string, error) {
 
 	f, err := ioutil.TempFile(tmpdir, "mongo-")

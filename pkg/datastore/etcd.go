@@ -10,20 +10,25 @@ import (
 	"github.com/mickep76/etcdmap"
 )
 
+// Etcd represents the datastore interface for the etcd db
 type Etcd struct {
 	endpoint string
 }
 
+// NewEtcd creates a new etcd datastore from a given endpoint
 func NewEtcd(endpoint string) *Etcd {
 	return &Etcd{
 		endpoint: endpoint,
 	}
 }
 
+// String returns a string representation of the datastore
 func (e *Etcd) String() string {
 	return "etcd"
 }
 
+// ExportTo exports the database contents to a file and uses the given tempdir
+// required to satisfy the datastore interface
 func (e *Etcd) ExportTo(tmpdir string) (string, error) {
 	cfg := client.Config{
 		Endpoints: []string{e.endpoint},

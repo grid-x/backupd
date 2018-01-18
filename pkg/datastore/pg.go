@@ -12,11 +12,13 @@ const (
 	pgDump = "pg_dump"
 )
 
+// Postgres represents the datastore implementation for the postgres database
 type Postgres struct {
 	logger log.FieldLogger
 	url    string
 }
 
+// NewPostgres creates a new postgres instance from the given connect URL
 func NewPostgres(url string) *Postgres {
 	return &Postgres{
 		logger: log.New().WithFields(log.Fields{
@@ -27,10 +29,13 @@ func NewPostgres(url string) *Postgres {
 	}
 }
 
+// String returns a string representation of the datastore
 func (p *Postgres) String() string {
 	return "postgresql"
 }
 
+// ExportTo exports the database contents to a file and uses the given tempdir
+// required to satisfy the datastore interface
 func (p *Postgres) ExportTo(tmpdir string) (string, error) {
 	cmd := exec.Command(pgDump, p.url)
 	f, err := ioutil.TempFile(tmpdir, "postgres-")
