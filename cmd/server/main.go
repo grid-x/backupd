@@ -94,6 +94,13 @@ func main() {
 				continue
 			}
 			ds = datastore.NewMongoDB(host, port, user, password)
+		case "postgres":
+			url, ok := t.Settings["url"].(string)
+			if !ok {
+				logger.Errorf("Can't convert postgres url to string for target %s", t.Name)
+				continue
+			}
+			ds = datastore.NewPostgres(url)
 		default:
 			logger.Warnf("Target type '%s' currently not supported", t.Type)
 			continue
