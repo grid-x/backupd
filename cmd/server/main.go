@@ -14,11 +14,12 @@ import (
 
 func main() {
 	var (
-		logger = log.New()
+		logger = log.New().WithFields(log.Fields{
+			"component": "main",
+		})
 
 		configFile = flag.String("config-file", "config.yaml", "Config file to use")
 	)
-
 	flag.Parse()
 
 	config, err := config.ReadConfigFromFile(*configFile)
@@ -36,11 +37,12 @@ func main() {
 		logger.Warn("No target provided")
 	}
 
-	statusc := make(chan backup.BackupJobStatus)
+	statusc := make(chan backup.JobStatus)
 	var schedules []backup.Schedule
 
 	var ds backup.DataStore
 	for _, t := range config.Targets {
+		logger.Infof("Processing target %s", t.Name)
 		switch t.Type {
 		case "etcd":
 			endpoint, ok := t.Settings["endpoint"].(string)
@@ -92,6 +94,13 @@ func main() {
 				continue
 			}
 			ds = datastore.NewMongoDB(host, port, user, password)
+		case "postgres":
+			url, ok := t.Settings["url"].(string)
+			if !ok {
+				logger.Errorf("Can't convert postgres url to string for target %s", t.Name)
+				continue
+			}
+			ds = datastore.NewPostgres(url)
 		default:
 			logger.Warnf("Target type '%s' currently not supported", t.Type)
 			continue
@@ -102,8 +111,8 @@ func main() {
 			TempDirPrefix: "",
 		}
 		schedules = append(schedules, backup.Schedule{
-			Spec:      t.Schedule,
-			BackupJob: backup.NewBackupJob(ds, s3, conf, statusc),
+			Spec: t.Schedule,
+			Job:  backup.NewJob(ds, s3, conf, statusc),
 		})
 		logger.Infof("Successfully added job for target: %s", t.Name)
 	}

@@ -1,20 +1,28 @@
 package backup
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
+// DataStore represents a datastore that can export data to a file
 type DataStore interface {
+	fmt.Stringer
 	ExportTo(tmpdir string) (string, error)
 }
 
+// Storage represents a storage for a backup file and provides a mechanism to
+// copy a localfile to the remote location
 type Storage interface {
 	Copy(localfile string, remotefile string) error
 }
 
+// Config is the configuration for a backup job
 type Config struct {
 	// Name of backup this job belongs to
 	Name string
@@ -23,6 +31,7 @@ type Config struct {
 	TempDirPrefix string
 }
 
+// DefaultConfig returns the default config
 func DefaultConfig() Config {
 	return Config{
 		TempDir:       "", // empty string forces to use system's defaults
@@ -30,39 +39,57 @@ func DefaultConfig() Config {
 	}
 }
 
-type BackupJobStatus struct {
+// JobStatus represents the status, e.g. error and duration, of a
+// finished backup job
+type JobStatus struct {
 	Name     string
 	Duration time.Duration
 	Error    error
 }
 
-func errorStatus(name string, start time.Time, err error) BackupJobStatus {
+func errorStatus(name string, start time.Time, err error) JobStatus {
 	end := time.Now()
-	return BackupJobStatus{
+	return JobStatus{
 		Name:     name,
 		Duration: end.Sub(start),
 		Error:    err,
 	}
 }
 
-type BackupJob struct {
+// Job represents a backup job and contains all settings for the job
+type Job struct {
 	conf      Config
 	datastore DataStore
 	storage   Storage
-	statusc   chan BackupJobStatus
+	statusc   chan JobStatus
+
+	logger log.FieldLogger
 }
 
-func NewBackupJob(ds DataStore, s Storage, conf Config, statusc chan BackupJobStatus) *BackupJob {
-	return &BackupJob{
+// NewJob creates a new backup job for the given data store and the
+// storage using the config provided. When executed the status will be written
+// to the status channel
+func NewJob(ds DataStore, s Storage, conf Config, statusc chan JobStatus) *Job {
+	return &Job{
 		datastore: ds,
 		storage:   s,
 		conf:      conf,
 		statusc:   statusc,
+
+		logger: log.New().WithFields(log.Fields{
+			"component": "backup-job",
+			"datastore": ds,
+			"name":      conf.Name,
+		}),
 	}
 }
 
-func (b *BackupJob) Run() {
+// Run will execute the backup job and is blocking
+func (b *Job) Run() {
 	start := time.Now()
+
+	b.logger.Info("Backup job started")
+	defer b.logger.Info("Backup job finished")
 
 	tmpDir, err := ioutil.TempDir(b.conf.TempDir, b.conf.TempDirPrefix)
 	if err != nil {
@@ -92,8 +119,9 @@ func (b *BackupJob) Run() {
 
 	end := time.Now()
 
-	b.statusc <- BackupJobStatus{
+	b.statusc <- JobStatus{
 		Name:     b.conf.Name,
 		Duration: end.Sub(start),
 	}
+
 }

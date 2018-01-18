@@ -32,10 +32,5 @@ func createTarArchive(tarArchive *os.File, files []string) error {
 			return err
 		}
 	}
-	// Make sure to check the error on Close.
-	if err := tw.Close(); err != nil {
-		return err
-	}
-
-	return nil
+	return tw.Close()
 }
