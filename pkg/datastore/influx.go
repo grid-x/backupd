@@ -48,6 +48,10 @@ func NewInflux(endpoint, database string, last *time.Duration) *Influx {
 	}
 }
 
+func (i *Influx) String() string {
+	return "Influx"
+}
+
 func (i *Influx) ExportTo(tmpdir string) (string, error) {
 	var since *time.Time
 	if i.last != nil {

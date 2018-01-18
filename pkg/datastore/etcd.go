@@ -20,6 +20,10 @@ func NewEtcd(endpoint string) *Etcd {
 	}
 }
 
+func (e *Etcd) String() string {
+	return "etcd"
+}
+
 func (e *Etcd) ExportTo(tmpdir string) (string, error) {
 	cfg := client.Config{
 		Endpoints: []string{e.endpoint},

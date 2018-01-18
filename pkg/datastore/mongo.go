@@ -43,6 +43,10 @@ func NewMongoDB(host string, port int, user, password string) *MongoDB {
 	}
 }
 
+func (m *MongoDB) String() string {
+	return "mongodb"
+}
+
 func (m *MongoDB) ExportTo(tmpdir string) (string, error) {
 
 	f, err := ioutil.TempFile(tmpdir, "mongo-")

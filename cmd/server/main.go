@@ -14,11 +14,12 @@ import (
 
 func main() {
 	var (
-		logger = log.New()
+		logger = log.New().WithFields(log.Fields{
+			"component": "main",
+		})
 
 		configFile = flag.String("config-file", "config.yaml", "Config file to use")
 	)
-
 	flag.Parse()
 
 	config, err := config.ReadConfigFromFile(*configFile)
@@ -41,6 +42,7 @@ func main() {
 
 	var ds backup.DataStore
 	for _, t := range config.Targets {
+		logger.Infof("Processing target %s", t.Name)
 		switch t.Type {
 		case "etcd":
 			endpoint, ok := t.Settings["endpoint"].(string)
