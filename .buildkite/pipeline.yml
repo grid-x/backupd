@@ -9,3 +9,8 @@ steps:
     label: ':golang: Build'
     agents:
     - "queue=default"
+  - command:
+    - 'make ci_lint'
+    label: ':golang::mag: Lint'
+    agents:
+    - "queue=default"
