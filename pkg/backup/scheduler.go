@@ -5,8 +5,8 @@ import (
 )
 
 type Schedule struct {
-	Spec      string
-	BackupJob *BackupJob
+	Spec string
+	Job  *Job
 }
 
 type Scheduler struct {
@@ -17,7 +17,7 @@ func NewScheduler(schedules []Schedule) (*Scheduler, error) {
 	cr := cron.New()
 
 	for _, s := range schedules {
-		err := cr.AddJob(s.Spec, s.BackupJob)
+		err := cr.AddJob(s.Spec, s.Job)
 		if err != nil {
 			return nil, err
 		}

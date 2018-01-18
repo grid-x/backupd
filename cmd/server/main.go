@@ -37,7 +37,7 @@ func main() {
 		logger.Warn("No target provided")
 	}
 
-	statusc := make(chan backup.BackupJobStatus)
+	statusc := make(chan backup.JobStatus)
 	var schedules []backup.Schedule
 
 	var ds backup.DataStore
@@ -111,8 +111,8 @@ func main() {
 			TempDirPrefix: "",
 		}
 		schedules = append(schedules, backup.Schedule{
-			Spec:      t.Schedule,
-			BackupJob: backup.NewBackupJob(ds, s3, conf, statusc),
+			Spec: t.Schedule,
+			Job:  backup.NewJob(ds, s3, conf, statusc),
 		})
 		logger.Infof("Successfully added job for target: %s", t.Name)
 	}
