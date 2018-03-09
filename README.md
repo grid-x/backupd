@@ -1,5 +1,41 @@
 # backupd
-Microservice for performing backups
+
+backupd is a small service for performing backups. It implements several
+datastores that describe how to perform backups for the respective database.
+
+So far we have support for:
+
+* InfluxDB
+* MongoDB
+* Postgres
+* etcd
+
+The procedure is generally the same:
+
+The database needs to be accessible over network and the backup needs to happen
+over network. The implementation will start a subprocess, e.g. `pg_dump` or
+`influxd backup ...` to create a local backup file (if there are multiple files
+they are compressed into an archive) and then upload those files.
+
+## Develop
+
+```
+# Build
+make
+
+# Lint
+make lint
+
+# Tests
+make test
+
+# Build the docker image
+make docker
+
+# Push the image (if you have access to the repository)
+make push
+```
+
 
 ## How to restore backups produced by backupd
 
