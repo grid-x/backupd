@@ -5,7 +5,7 @@ steps:
     agents:
     - "queue=default"
   - command:
-    - 'make ci'
+    - 'make ci_build'
     label: ':golang: Build'
     agents:
     - "queue=default"
